@@ -2,40 +2,57 @@
 
 ## 📋 Overview
 
-AI Employee Vault is an automated system that:
-1. **Monitors files** dropped in the Inbox folder
-2. **Watches WhatsApp & Gmail** for unread messages/emails with keywords and creates tasks in Needs_Action
-3. **Analyzes tasks** using AI (OpenRouter/Qwen)
-4. **Creates action plans** with step-by-step instructions
-5. **Manages approvals** for high-risk tasks
-6. **Posts to LinkedIn** from approved draft files (generate with AI, move to Approved/, auto-publish)
+AI Employee Vault is a comprehensive autonomous business automation system that monitors, analyzes, and acts on business tasks across multiple channels. The system is organized into **Three Tiers** (Bronze, Silver, Gold), each adding more capabilities and integrations.
+
+### Core Capabilities
+
+| Tier | Focus | Features |
+|------|-------|----------|
+| **Bronze** | File & Task Management | File watching, AI analysis, action plans, approval workflow |
+| **Silver** | Communication & Social | WhatsApp, Gmail, LinkedIn automation |
+| **Gold** | Business Intelligence | Odoo ERP, Facebook, Instagram, Twitter, autonomous loops, weekly audits |
 
 ---
 
 ## 🏗️ System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     AI EMPLOYEE VAULT                           │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  📥 Inbox          →  Drop new files here                       │
-│       ↓                                                         │
-│  👁️ file_watcher   →  Detects new files                        │
-│       ↓                                                         │
-│  ⚡ Needs_Action   →  Task files created here                   │
-│       ↓                                                         │
-│  🤖 orchestrator   →  Sends tasks to AI for analysis            │
-│       ↓                                                         │
-│  📋 Plans          →  AI-generated action plans                 │
-│       ↓                                                         │
-│  ⚠️ Pending_Approval → High-risk tasks flagged here             │
-│       ↓                                                         │
-│  ✅ approve.py     →  Manual approval interface                 │
-│       ↓                                                         │
-│  📁 Done           →  Completed tasks                           │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        AI EMPLOYEE VAULT SYSTEM                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    BRONZE TIER - Core Foundation                     │   │
+│  │  ┌──────────┐  ┌──────────────┐  ┌─────────────┐  ┌──────────────┐  │   │
+│  │  │  Inbox   │→ │ file_watcher │→ │ Needs_Action│→ │ orchestrator │  │   │
+│  │  └──────────┘  └──────────────┘  └─────────────┘  └──────────────┘  │   │
+│  │                                              │                       │   │
+│  │                                              ↓                       │   │
+│  │  ┌──────────┐  ┌──────────────┐  ┌─────────────┐  ┌──────────────┐  │   │
+│  │  │  Done    │← │   approve.py │← │Pending_Appro│← │    Plans     │  │   │
+│  │  └──────────┘  └──────────────┘  └─────────────┘  └──────────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    SILVER TIER - Communication                       │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐   │   │
+│  │  │  WhatsApp    │  │    Gmail     │  │      LinkedIn            │   │   │
+│  │  │   Watcher    │  │   Watcher    │  │       Poster             │   │   │
+│  │  └──────────────┘  └──────────────┘  └──────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                      GOLD TIER - Business Intelligence               │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────────┐ │   │
+│  │  │  Odoo    │  │ Facebook │  │ Instagram│  │       Twitter        │ │   │
+│  │  │   MCP    │  │   API    │  │   API    │  │         API          │ │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────────────────┘ │   │
+│  │  ┌──────────────────────────────────────────────────────────────────┐ │   │
+│  │  │   Ralph Loop (Autonomous Worker)  │   Weekly Audit (CEO Brief)  │ │   │
+│  │  └──────────────────────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -44,690 +61,76 @@ AI Employee Vault is an automated system that:
 
 ```
 AI_Employee_Vault/
-├── Inbox/              # Drop new files here
-├── Needs_Action/       # Pending tasks (from file, WhatsApp, Gmail watchers)
-├── Plans/              # AI-generated plans (in AI_Employee_Project/Plans/)
-├── Pending_Approval/   # High-risk tasks + LinkedIn draft posts
-├── Approved/           # LinkedIn posts ready to publish
-├── Done/               # Completed tasks + posted LinkedIn files
-├── Logs/               # JSON logs (daily files)
-├── file_watcher.py     # File monitoring service
-├── whatsapp_watcher.py # WhatsApp Web watcher (keywords → tasks)
-├── gmail_watcher.py    # Gmail watcher (unread important → tasks)
-├── linkedin_poster.py  # LinkedIn post generator + publisher
-├── orchestrator.py     # AI orchestration service
-├── approve.py          # Approval manager
-├── test_bronze.py      # Test suite
-├── Dashboard.md        # Project dashboard
-└── Company_Handbook.md # Company guidelines
+├── 📥 Inbox/                   # Drop new files here (Bronze)
+├── ⚠️ Needs_Action/            # Pending tasks from all sources
+├── 📋 Plans/                   # AI-generated action plans
+├── ⏳ Pending_Approval/        # High-risk tasks awaiting approval
+├── ✅ Approved/                # Content ready to publish (LinkedIn, Social)
+├── 📁 Done/                    # Completed tasks
+│   └── Threads/                # Twitter threads (Gold)
+├── 📊 Logs/                    # JSON logs and test results
+├── 📰 Briefings/               # CEO briefings, social summaries (Gold)
+├── 💰 Accounting/              # Financial summaries (Gold)
+├── 🚨 Needs_Action/            # Failed tasks, auth errors
 
+├── 🤖 CORE SERVICES (Bronze)
+│   ├── file_watcher.py         # Monitors Inbox for new files
+│   ├── orchestrator.py         # AI analysis and plan generation
+│   └── approve.py              # Approval management interface
+│
+├── 📱 COMMUNICATION (Silver)
+│   ├── whatsapp_watcher.py     # WhatsApp Web keyword monitoring
+│   ├── gmail_watcher.py        # Gmail unread/important monitoring
+│   └── linkedin_poster.py      # LinkedIn post generation & publishing
+│
+├── 💼 BUSINESS INTELLIGENCE (Gold)
+│   ├── odoo_mcp.py             # Odoo ERP integration (invoices, revenue)
+│   ├── meta_poster.py          # Facebook & Instagram posting
+│   ├── twitter_poster.py       # Twitter/X posting and threads
+│   ├── ralph_loop.py           # Autonomous AI worker loop
+│   ├── weekly_audit.py         # Weekly CEO briefing generator
+│   └── test_gold.py            # Gold Tier test suite
+│
+├── 📄 CONFIGURATION & DOCS
+│   ├── .env                    # Environment variables (API keys)
+│   ├── Dashboard.md            # Live project dashboard
+│   ├── Company_Handbook.md     # Company guidelines
+│   └── README.md               # This file
+│
 AI_Employee_Project/
-├── Plans/              # Action plans stored here
-├── whatsapp_session/   # WhatsApp Web browser session (QR once)
-├── whatsapp_processed.json
-├── gmail_credentials.json  # Google OAuth client (you create)
-├── gmail_token.json        # Gmail OAuth token (auto-created)
-├── processed_emails.json
-└── file_watcher.py     # Alternative location
+├── whatsapp_session/           # WhatsApp Web persistent session
+├── gmail_credentials.json      # Google OAuth credentials
+├── gmail_token.json            # Gmail OAuth token (auto-created)
+├── whatsapp_processed.json     # Processed WhatsApp message tracking
+└── processed_emails.json       # Processed Gmail message tracking
 ```
 
 ---
 
-## 🚀 Installation
+## 🥉 BRONZE TIER - Core Foundation
 
-### Step 1: Install Dependencies
+The Bronze Tier provides the fundamental task management and AI analysis capabilities.
 
-```bash
-pip install watchdog colorama openai python-dotenv
-```
+### Features
 
-### Step 2: Set Up API Key
+- ✅ **File Monitoring** - Real-time Inbox watching
+- ✅ **AI Analysis** - OpenRouter/Qwen integration for task understanding
+- ✅ **Action Plans** - Step-by-step instructions generated by AI
+- ✅ **Risk Assessment** - LOW/MEDIUM/HIGH classification
+- ✅ **Approval Workflow** - Human review for high-risk tasks
+- ✅ **Audit Trail** - Complete JSON logging
 
-Create a `.env` file in the AI_Employee_Vault folder:
+### Components
 
-```bash
-OPENROUTER_API_KEY=sk-or-v1-your-key-here
-OPENROUTER_MODEL=anthropic/claude-3.5-sonnet
-```
+| File | Purpose |
+|------|---------|
+| `file_watcher.py` | Monitors Inbox, creates task files in Needs_Action |
+| `orchestrator.py` | Analyzes tasks with AI, generates plans, assesses risk |
+| `approve.py` | Interactive approval/rejection interface |
+| `test_bronze.py` | Bronze Tier test suite (5 tests) |
 
-**Where to get API keys:**
-- OpenRouter: https://openrouter.ai/keys
-- Qwen (DashScope): https://dashscope.console.aliyun.com/
+### How to Start Bronze Tier
 
----
-
-## 📖 Components Detail
-
-### 1️⃣ file_watcher.py
-
-**Purpose:** Monitors the Inbox folder and creates task files when new files are detected.
-
-**How to start:**
-```bash
-python file_watcher.py
-```
-
-**Output:**
-```
-============================================================
-           AI EMPLOYEE FILE WATCHER SERVICE
-============================================================
-Monitoring: C:\Users\...\AI_Employee_Vault\Inbox
-Tasks Dir:  C:\Users\...\AI_Employee_Vault\Needs_Action
-Logs Dir:   C:\Users\...\AI_Employee_Vault\Logs
-============================================================
-Status: Starting...
-============================================================
-
-[SETUP] Checking directories...
-[SETUP] Directories ready.
-[SETUP] PID file: C:\...\Temp\file_watcher.pid
-[START] Watching for new files...
-[START] Press Ctrl+C to stop.
-```
-
-**When a new file is dropped:**
-```
-============================================================
-[DETECTED] New file: report.pdf
-[CREATED] Task file: 20260223_120000_report.pdf.md
-============================================================
-```
-
-**Features:**
-- ✅ Real-time file monitoring
-- ✅ Automatic task file creation
-- ✅ JSON logging
-- ✅ Graceful Ctrl+C shutdown
-- ✅ Colored terminal output
-- ✅ Never crashes (full error handling)
-
----
-
-### 2️⃣ orchestrator.py
-
-**Purpose:** Picks up tasks from Needs_Action, sends them to AI for analysis, and creates action plans.
-
-**How to start:**
-```bash
-python orchestrator.py
-```
-
-**Output:**
-```
-============================================================
-║           AI Employee Orchestrator Service               ║
-============================================================
-  Needs_Action: C:\Users\...\AI_Employee_Vault\Needs_Action
-  Plans Dir:    C:\Users\...\AI_Employee_Project\Plans
-  OpenRouter:   anthropic/claude-3.5-sonnet
-  Poll Interval: 30s
-============================================================
-
-[API] OpenRouter client initialized successfully.
-[START] Orchestrator running. Polling every 30s...
-```
-
-**When a task is processed:**
-```
-============================================================
-[PROCESSING] Task: 20260223_120000_report.pdf.md
-[CREATED] Plan: PLAN_report_pdf_20260223_120530.md
-[HIGH RISK] Copied to Pending_Approval
-[COMPLETE] Moved to Done: 20260223_120530_task.md
-[RISK] Level: HIGH - Requires human approval
-============================================================
-```
-
-**Features:**
-- ✅ AI task analysis (OpenRouter/Qwen)
-- ✅ Risk assessment (LOW/MEDIUM/HIGH)
-- ✅ Automatic plan generation
-- ✅ High-risk task flagging
-- ✅ 3x retry on API failure
-- ✅ 30-second polling interval
-
----
-
-### 3️⃣ approve.py
-
-**Purpose:** Manually review and approve/reject high-risk tasks.
-
-**How to start:**
-```bash
-python approve.py
-```
-
-**Interactive Menu:**
-```
-============================================================
-         PENDING APPROVAL MANAGER
-============================================================
-
-Found 2 pending item(s):
-
-  [1] 20260223_120000_report.pdf.md
-  [2] PLAN_report_pdf_20260223_120530.md
-
-  [a] Approve all
-  [r] Reject all
-  [q] Quit
-
-Select action [1-2, a, r, q]:
-```
-
-**Commands:**
-| Command | Action |
-|---------|--------|
-| `1, 2, 3...` | Select specific item |
-| `a` | Approve all pending items |
-| `r` | Reject all pending items |
-| `q` | Exit |
-
-**When selecting an individual item:**
-```
-File: PLAN_report_pdf_20260223_120530.md
-------------------------------------------------------------
-## Objective
-Review the financial report...
-
-## Steps
-- [ ] Open and read report
-- [ ] Verify numbers
-- [ ] Create summary
-
-## Risk Assessment
-Risk Level: HIGH (involves financial data)
-
-## Requires Approval: YES
-------------------------------------------------------------
-
-Approve/Reject/Skip [a/r/s]:
-```
-
-**Command Line Mode:**
-```bash
-# List pending approvals
-python approve.py list
-
-# Approve specific file
-python approve.py approve filename.md
-```
-
----
-
-### 4️⃣ test_bronze.py
-
-**Purpose:** Test the system to ensure everything is working properly.
-
-**How to run:**
-```bash
-python test_bronze.py
-```
-
-**Tests:**
-| Test | Description |
-|------|-------------|
-| 1. Folder Structure | Checks all directories exist |
-| 2. Required Files | Checks Dashboard.md, Company_Handbook.md |
-| 3. Dependencies | Checks watchdog, colorama, openai, dotenv |
-| 4. API Connectivity | Tests OpenRouter/Qwen API connection |
-| 5. End-to-End | Tests file drop → task creation flow |
-
-**Success Output:**
-```
-============================================================
-Bronze Tier: 5/5 tests passed
-============================================================
-
-[SUCCESS] Bronze Tier Complete - Ready for Submission!
-```
-
----
-
-## 📱 Watchers & LinkedIn Poster (WhatsApp, Gmail, LinkedIn)
-
-These services monitor external channels (WhatsApp, Gmail) and create task files in **Needs_Action**, and post approved content to LinkedIn. They run independently and can be used together with the file watcher and orchestrator.
-
----
-
-### 5️⃣ WhatsApp Watcher (`whatsapp_watcher.py`)
-
-**Purpose:** Monitors WhatsApp Web for **unread** chats whose **last message** contains certain keywords, then creates a task file in `Needs_Action/` for each match so you (or the orchestrator) can act on them.
-
-#### How it works
-
-1. **Browser:** Launches Chromium (Playwright) and opens WhatsApp Web. Uses a **persistent session** so you only scan the QR code once; after that it reuses `AI_Employee_Project/whatsapp_session/`.
-2. **Polling:** Every **30 seconds** it:
-   - Finds the chat list (left panel) and detects chats with an unread indicator (badge, aria-label, or numeric span).
-   - For each unread chat: opens the chat, reads the **last (incoming) message** from the conversation, and checks if it contains any configured **keywords**.
-   - If keywords match: creates a markdown task file in `Needs_Action/` (e.g. `WHATSAPP_Muzammil_20260223_013031.md`), logs the event, and marks that message as processed so it is not created again.
-3. **No keyword match:** Chats whose last message does not contain any keyword are skipped (no task file). You’ll see something like `[SKIP] No keywords matched (read: '…')` so you know what text was read.
-4. **Processed tracking:** Processed message IDs are stored in `AI_Employee_Project/whatsapp_processed.json` so the same message never creates duplicate tasks.
-
-#### Keywords (configurable in code)
-
-- **High priority:** `invoice`, `payment`, `urgent`, `asap`
-- **Normal:** `price`, `quote`, `help`, `project`
-
-All matching is case-insensitive.
-
-#### Prerequisites
-
-```bash
-pip install playwright colorama python-dotenv
-playwright install chromium
-```
-
-#### Configuration
-
-| Item | Location | Description |
-|------|----------|-------------|
-| Session (cookies/profile) | `AI_Employee_Project/whatsapp_session/` | Created on first run; keep it so you don’t re-scan QR. |
-| Processed messages | `AI_Employee_Project/whatsapp_processed.json` | Auto-created; do not edit unless you want to “re-process” a message. |
-| Task output | `Needs_Action/` | `WHATSAPP_<name>_<timestamp>.md` |
-| Logs | `Logs/YYYY-MM-DD.json` | Events like `whatsapp_message`, `whatsapp_error`. |
-
-**Environment (optional):**
-
-- `WHATSAPP_HEADLESS=true` — run browser in background (default: `false`, window visible).
-
-#### How to run
-
-```bash
-# Start watcher (stays running, polls every 30s)
-python whatsapp_watcher.py
-```
-
-**First run:** A browser window opens; scan the QR code with WhatsApp (Linked Devices). After that, the session is saved and later runs reuse it.
-
-**Output example:**
-
-```
-============================================================
-           WHATSAPP WATCHER SERVICE
-============================================================
-[READY] WhatsApp Web loaded.
-[START] WhatsApp Watcher running. Polling every 30s...
-[FOUND] 2 unread chat(s)
-[CHECKING] Chat: Muzammil
-[MATCH] Keywords: urgent
-[CREATED] Task: WHATSAPP_Muzammil_20260223_013031.md
-```
-
-#### Task file format (WhatsApp)
-
-```markdown
----
-type: whatsapp
-from: Muzammil
-message_preview: urgent
-received: 2026-02-23T01:30:31
-priority: urgent
-status: pending
-keyword_matched: urgent
----
-## Message Content
-<full message text>
-## Suggested Actions
-- [ ] Draft reply
-- [ ] Check if invoice/payment needed
-```
-
-#### Troubleshooting (WhatsApp)
-
-- **“No unread chats found”** — Unread detection uses several methods (badge, aria-label, numeric badge). If your WhatsApp Web layout changed, the script may need selector updates.
-- **“Chat not found”** — The script only searches inside the left-panel chat list. If the list isn’t loaded or scrolled, it can miss the chat; ensure WhatsApp Web is fully loaded.
-- **“No message found” / “No keywords matched”** — The last message in the open chat is read with multiple selectors (e.g. `data-lexical-text`, copyable text). If the log shows `(read: '')` or wrong text, the DOM may have changed.
-- **Session expired** — Delete `whatsapp_session/` and run again; you’ll be asked to scan the QR code again.
-
----
-
-### 6️⃣ Gmail Watcher (`gmail_watcher.py`)
-
-**Purpose:** Polls Gmail for **unread + important** emails and creates one task file per email in `Needs_Action/`. Each email is processed only once (tracked by message ID).
-
-#### How it works
-
-1. **Auth:** Uses Google OAuth 2.0 with **read-only** Gmail scope. On first run (or when token is missing/expired) a browser opens for you to sign in; the token is saved in `AI_Employee_Project/gmail_token.json`.
-2. **Polling:** Every **120 seconds** it:
-   - Calls Gmail API: `is:unread is:important`, up to 50 messages.
-   - Skips any message ID already in `processed_emails`.
-   - For each new email: fetches metadata (From, To, Subject, Date) and snippet, determines **priority** (urgent / high / medium) from subject and sender, then creates `EMAIL_<id>_<timestamp>.md` in `Needs_Action/` and marks the ID as processed.
-3. **Priority rules:** “Urgent” if subject contains words like `invoice`, `payment`, `urgent`, `asap`, `immediate`, `deadline`; “high” if From matches known contacts (e.g. boss@, manager@, hr@); otherwise “medium”.
-4. **Rate limits:** On 429, the script waits 5 minutes then retries. On 401 (token expired), it prompts for re-auth on next run.
-
-#### Prerequisites
-
-```bash
-pip install google-auth google-auth-oauthlib google-api-python-client colorama python-dotenv
-```
-
-#### Configuration
-
-| Item | Location | Description |
-|------|----------|-------------|
-| OAuth credentials | `AI_Employee_Project/gmail_credentials.json` | From Google Cloud Console (OAuth 2.0 Client ID, desktop app). |
-| Token | `AI_Employee_Project/gmail_token.json` | Auto-created after first sign-in; do not share. |
-| Processed emails | `AI_Employee_Project/processed_emails.json` | List of processed message IDs. |
-| Task output | `Needs_Action/` | `EMAIL_<id>_<timestamp>.md` |
-| Logs | `Logs/YYYY-MM-DD.json` | Events like `gmail_message`, `gmail_error`. |
-
-**Gmail API setup (one-time):**
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create/select project → enable **Gmail API**.
-2. Create **OAuth 2.0 Client ID** (Desktop application), download JSON, and save it as `AI_Employee_Project/gmail_credentials.json` (path is in code).
-3. Run `python gmail_watcher.py`; browser opens for sign-in; after approval, `gmail_token.json` is created.
-
-#### How to run
-
-```bash
-# Start watcher (stays running, polls every 120s)
-python gmail_watcher.py
-```
-
-**Output example:**
-
-```
-[AUTH] Gmail API connected.
-[START] Gmail Watcher running. Polling every 120s...
-[FOUND] 3 new email(s)
-[CREATED] Task: EMAIL_abc123_20260223_120530.md
-```
-
-#### Task file format (Gmail)
-
-```markdown
----
-type: email
-from: sender@example.com
-subject: Invoice due
-received: 2026-02-23T12:05:30
-priority: urgent
-status: pending
----
-## Email Content
-<snippet>
-## Suggested Actions
-- [ ] Reply to sender
-- [ ] Forward if needed
-```
-
-#### Troubleshooting (Gmail)
-
-- **“Credentials file not found”** — Ensure `gmail_credentials.json` is in `AI_Employee_Project/` (see `Config.CREDENTIALS_FILE` in script).
-- **“Token expired”** — Delete `gmail_token.json` and run again; you’ll get a new browser sign-in.
-- **429 rate limit** — Script waits and retries; reduce polling frequency in code if needed.
-
----
-
-### 7️⃣ LinkedIn Poster (`linkedin_poster.py`)
-
-**Purpose:** (1) **Generate** LinkedIn post drafts from a topic using AI and save them to `Pending_Approval/`. (2) **Post** approved content: any `LINKEDIN_*.md` file you move to `Approved/` is published to your LinkedIn profile via the LinkedIn API, then moved to `Done/`.
-
-#### How it works
-
-1. **Generate (`--generate "topic"`):** Calls OpenRouter (or Qwen) with a LinkedIn-style system prompt, gets one post, and saves a markdown file in `Pending_Approval/` with frontmatter (topic, status) and a “Post Content” section. No LinkedIn token needed for this step.
-2. **Approve:** You move the file from `Pending_Approval/` to `Approved/` when you’re happy with it (manual step).
-3. **Post (`--post` or scheduler):** For each `LINKEDIN_*.md` in `Approved/`:
-   - Parses frontmatter and “## Post Content”; strips markdown to plain text.
-   - Resolves **author URN**: uses `LINKEDIN_AUTHOR_URN` from `.env`, or (if empty) fetches the current user from LinkedIn’s OpenID **userinfo** endpoint (`/v2/userinfo`) so the post is published as the token’s account.
-   - Calls LinkedIn **UGC Posts API** (`POST /v2/ugcPosts`) with that author and the cleaned text.
-   - On success: moves the file to `Done/` with a timestamped name (e.g. `20260223_031121_POSTED_...`).
-4. **Scheduler (default):** If you run with no arguments (or `--schedule`), it loops forever and runs the “post approved content” logic every **600 seconds** (10 minutes).
-
-#### Prerequisites
-
-```bash
-pip install requests colorama python-dotenv openai
-```
-
-- **LinkedIn:** Create an app at [LinkedIn Developers](https://www.linkedin.com/developers/apps). Request **w_member_social** (post on behalf of user). For `--whoami` and auto-author: **profile** and **openid**.
-- **AI (optional):** OpenRouter or Qwen API key for post generation.
-
-#### Configuration
-
-| Item | Location | Description |
-|------|----------|-------------|
-| `.env` | `AI_Employee_Vault/.env` | `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_AUTHOR_URN`; optional `OPENROUTER_API_KEY` / `QWEN_API_KEY` for generation. |
-| Pending drafts | `Pending_Approval/` | Generated posts; move to `Approved/` when ready. |
-| Ready to post | `Approved/` | Script posts everything matching `LINKEDIN_*.md` here. |
-| Posted | `Done/` | Files moved here after successful post. |
-| Logs | `Logs/YYYY-MM-DD.json` | Events like `linkedin_post_success`, `linkedin_api_error`. |
-
-**Environment variables:**
-
-```bash
-# Required for posting
-LINKEDIN_ACCESS_TOKEN=<your OAuth 2.0 access token>
-LINKEDIN_AUTHOR_URN=urn:li:person:YOUR_ID   # optional if token has profile+openid (then run --whoami to get ID)
-
-# Optional: AI post generation
-OPENROUTER_API_KEY=sk-or-v1-...
-OPENROUTER_MODEL=anthropic/claude-3.5-sonnet
-# or
-QWEN_API_KEY=...
-```
-
-**Getting the author URN:** After you have a token with **profile** and **openid** scopes, run:
-
-```bash
-python linkedin_poster.py --whoami
-```
-
-It calls `/v2/userinfo` and prints the correct `LINKEDIN_AUTHOR_URN=urn:li:person:XXXX` (or `urn:li:member:XXXX`) to put in `.env`. The author **must** match the account that created the token.
-
-#### How to run
-
-```bash
-# Generate a draft (uses AI if OPENROUTER_API_KEY or QWEN_API_KEY set)
-python linkedin_poster.py --generate "AI in healthcare"
-
-# List pending and approved posts
-python linkedin_poster.py --list
-
-# Post all approved posts now (no scheduler)
-python linkedin_poster.py --post
-
-# Test without posting
-python linkedin_poster.py --post --dry-run
-
-# Get your author URN for .env (token must have profile + openid)
-python linkedin_poster.py --whoami
-
-# Verify token and author (optional)
-python linkedin_poster.py --test-linkedin
-
-# Run scheduler: every 10 min post from Approved/ (default)
-python linkedin_poster.py
-# or
-python linkedin_poster.py --schedule
-```
-
-**Output example (post):**
-
-```
-[POSTER] Checking for approved LinkedIn posts...
-[FOUND] 1 approved post(s)
-[LINKEDIN] Post ID: urn:li:share:7431460613773524992
-[MOVED] To Done: 20260223_031121_POSTED_LINKEDIN_ai_automation_....md
-[POSTED] Successfully published: LINKEDIN_ai_automation_....md
-```
-
-#### Post file format (LinkedIn)
-
-- **Pending_Approval / Approved:** Markdown with YAML frontmatter and a `## Post Content` section. The script strips markdown and sends the content as plain text to LinkedIn.
-- **Done:** Same content, filename prefixed with timestamp and `_POSTED_`.
-
-#### Troubleshooting (LinkedIn)
-
-- **403 on `/author`** — The token’s user and `LINKEDIN_AUTHOR_URN` must match. Run `--whoami` with the same token and set the printed URN in `.env`. Use **person** URN from userinfo (e.g. `urn:li:person:7FQ01B2oRZ`).
-- **“Not enough permissions”** — App needs **w_member_social**. Re-create the token with that scope and update `LINKEDIN_ACCESS_TOKEN`.
-- **Generation fails** — Set `OPENROUTER_API_KEY` or `QWEN_API_KEY` (and optionally model) in `.env`.
-
----
-
-## 🔄 Complete Workflow
-
-### Step-by-Step Process
-
-```
-1. USER drops file in Inbox/
-   └── Example: "quarterly_report.pdf"
-   
-2. file_watcher.py detects the file
-   └── Creates: Needs_Action/20260223_120000_quarterly_report.pdf.md
-   
-3. orchestrator.py picks up task (within 30 seconds)
-   └── Sends to AI for analysis
-   
-4. AI analyzes and returns:
-   - Action plan with steps
-   - Risk level (LOW/MEDIUM/HIGH)
-   - Approval requirement
-   
-5. System creates:
-   - Plans/PLAN_quarterly_report_20260223_120530.md
-   - If HIGH RISK → Copies to Pending_Approval/
-   
-6. User runs: python approve.py
-   └── Reviews and approves/rejects
-   
-7. Approved files → Done/
-   Rejected files → Needs_Action/ (for reprocessing)
-```
-
----
-
-## 📝 File Formats
-
-### Task File (Needs_Action/)
-```markdown
----
-type: file_drop
-original_name: quarterly_report.pdf
-received: 2026-02-23T12:00:00
-priority: medium
-status: pending
----
-## File Details
-
-## Suggested Actions
-- [ ] Review file
-- [ ] Process and respond
-## Notes
-```
-
-### Plan File (Plans/)
-```markdown
----
-created: 2026-02-23T12:05:30
-risk_level: HIGH
-status: pending
----
-## Objective
-Review quarterly financial report and create summary.
-
-## Steps
-- [ ] Open and read full report
-- [ ] Verify all financial figures
-- [ ] Create executive summary
-- [ ] Flag any anomalies
-
-## Risk Assessment
-Risk Level: HIGH - Contains sensitive financial data
-
-## Requires Approval: YES
-```
-
-### Log File (Logs/YYYY-MM-DD.json)
-```json
-[
-  {
-    "type": "file_detected",
-    "timestamp": "2026-02-23T12:00:00",
-    "data": {
-      "original_file": "C:\\...\\Inbox\\report.pdf",
-      "task_file": "C:\\...\\Needs_Action\\task.md"
-    }
-  },
-  {
-    "type": "task_processed",
-    "timestamp": "2026-02-23T12:05:30",
-    "data": {
-      "risk_level": "HIGH",
-      "requires_approval": true
-    }
-  }
-]
-```
-
----
-
-## ⚙️ Configuration
-
-### Environment Variables (.env)
-
-```bash
-# OpenRouter API (orchestrator, LinkedIn generation)
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxx
-OPENROUTER_MODEL=anthropic/claude-3.5-sonnet
-
-# Alternative: Qwen API
-# QWEN_API_KEY=your-qwen-key
-# QWEN_MODEL=qwen-plus
-
-# WhatsApp Watcher (optional)
-# WHATSAPP_HEADLESS=true
-
-# LinkedIn Poster (required for posting)
-# LINKEDIN_ACCESS_TOKEN=your-oauth-token
-# LINKEDIN_AUTHOR_URN=urn:li:person:YOUR_ID   # get via: python linkedin_poster.py --whoami
-# DRY_RUN=true   # test without posting
-```
-
-### Available Models (OpenRouter)
-
-| Model | Use Case |
-|-------|----------|
-| `anthropic/claude-3.5-sonnet` | Best overall |
-| `openai/gpt-4o-mini` | Fast & cheap |
-| `google/gemini-pro-1.5` | Long context |
-| `meta-llama/llama-3-70b` | Open source |
-
----
-
-## 🛠️ Troubleshooting
-
-### Problem: file_watcher.py crashes
-**Solution:** May be Unicode error. Use the latest version.
-
-### Problem: API key not found
-**Solution:** Check `.env` file exists in AI_Employee_Vault folder.
-
-### Problem: Tasks not being processed
-**Solution:** 
-1. Ensure orchestrator.py is running
-2. Start with `python orchestrator.py`
-
-### Problem: Pending_Approval is empty
-**Solution:** This is normal. Only HIGH RISK tasks appear here.
-
-### Problem: Tests are failing
-**Solution:**
-```bash
-# Reinstall dependencies
-pip install --upgrade watchdog colorama openai python-dotenv
-
-# Then test again
-python test_bronze.py
-```
-
----
-
-## 📊 Quick Reference
-
-### Start All Services
 ```bash
 # Terminal 1: File Watcher
 python file_watcher.py
@@ -735,56 +138,751 @@ python file_watcher.py
 # Terminal 2: Orchestrator
 python orchestrator.py
 
-# Optional - Terminal 3: WhatsApp Watcher (polls every 30s)
+# When needed: Approval Manager
+python approve.py
+
+# Test the setup
+python test_bronze.py
+```
+
+### Bronze Tier Workflow
+
+```
+1. Drop file in Inbox/
+   ↓
+2. file_watcher.py detects → Creates task in Needs_Action/
+   ↓
+3. orchestrator.py picks up → Sends to AI
+   ↓
+4. AI returns: Plan + Risk Level
+   ↓
+5. If HIGH RISK → Copied to Pending_Approval/
+   ↓
+6. User runs approve.py → Approves/Rejects
+   ↓
+7. Task moved to Done/
+```
+
+### Test Results (5/5 = Success)
+
+```bash
+python test_bronze.py
+
+# Tests:
+# 1. Folder Structure - All directories exist
+# 2. Required Files - Dashboard.md, Company_Handbook.md present
+# 3. Dependencies - watchdog, colorama, openai, dotenv installed
+# 4. API Connectivity - OpenRouter/Qwen responds
+# 5. End-to-End - File drop → task creation works
+```
+
+---
+
+## 🥈 SILVER TIER - Communication & Social
+
+The Silver Tier adds communication channel monitoring and social media automation.
+
+### Features
+
+- ✅ **WhatsApp Monitoring** - Keyword-based task creation from WhatsApp Web
+- ✅ **Gmail Monitoring** - Unread + Important emails → tasks
+- ✅ **LinkedIn Automation** - AI-generated posts, approval workflow, auto-publishing
+
+### Components
+
+| File | Purpose |
+|------|---------|
+| `whatsapp_watcher.py` | Monitors WhatsApp Web, creates tasks for keyword matches |
+| `gmail_watcher.py` | Polls Gmail API, creates tasks for important unread emails |
+| `linkedin_poster.py` | Generates posts with AI, publishes approved content |
+
+### WhatsApp Watcher Setup
+
+```bash
+# Install dependencies
+pip install playwright colorama python-dotenv
+playwright install chromium
+
+# Start watcher
 python whatsapp_watcher.py
 
-# Optional - Terminal 4: Gmail Watcher (polls every 120s)
+# First run: Scan QR code with WhatsApp (Linked Devices)
+# Session saved to AI_Employee_Project/whatsapp_session/
+```
+
+**Keywords Monitored:**
+- **High Priority:** `invoice`, `payment`, `urgent`, `asap`
+- **Normal:** `price`, `quote`, `help`, `project`
+
+### Gmail Watcher Setup
+
+```bash
+# Install dependencies
+pip install google-auth google-auth-oauthlib google-api-python-client colorama python-dotenv
+
+# Google Cloud Console setup:
+# 1. Go to https://console.cloud.google.com/
+# 2. Create project → Enable Gmail API
+# 3. Create OAuth 2.0 Client ID (Desktop app)
+# 4. Download JSON → Save as AI_Employee_Project/gmail_credentials.json
+
+# Start watcher
 python gmail_watcher.py
 
-# Optional - LinkedIn Poster (scheduler: posts from Approved/ every 10 min)
+# First run: Browser opens for Google sign-in
+# Token saved to AI_Employee_Project/gmail_token.json
+```
+
+### LinkedIn Poster Setup
+
+```bash
+# Install dependencies
+pip install requests colorama python-dotenv openai
+
+# LinkedIn Developer setup:
+# 1. Go to https://www.linkedin.com/developers/apps
+# 2. Create app → Request: w_member_social, profile, openid
+# 3. Get access token
+
+# Add to .env:
+LINKEDIN_ACCESS_TOKEN=your_token
+LINKEDIN_AUTHOR_URN=urn:li:person:YOUR_ID  # Run: python linkedin_poster.py --whoami
+
+# Generate a post draft
+python linkedin_poster.py --generate "AI productivity tips"
+
+# Post approved content (move from Pending_Approval to Approved first)
+python linkedin_poster.py --post
+
+# Run scheduler (posts every 10 minutes)
 python linkedin_poster.py
+```
+
+### Start All Silver Tier Services
+
+```bash
+# Terminal 3: WhatsApp Watcher
+python whatsapp_watcher.py
+
+# Terminal 4: Gmail Watcher
+python gmail_watcher.py
+
+# Terminal 5: LinkedIn Poster (scheduler mode)
+python linkedin_poster.py
+```
+
+---
+
+## 🥇 GOLD TIER - Business Intelligence
+
+The Gold Tier provides full business automation with ERP integration, social media management across all platforms, autonomous AI workers, and automated executive reporting.
+
+### Features
+
+- ✅ **Odoo ERP Integration** - Invoices, revenue, expenses, overdue tracking
+- ✅ **Facebook Posting** - Page posts via Graph API
+- ✅ **Instagram Posting** - Business account posts via Graph API
+- ✅ **Twitter/X Posting** - Tweets and threads via API v2
+- ✅ **Ralph Loop** - Autonomous AI worker that persists until task completion
+- ✅ **Weekly Audit** - Automated Monday Morning CEO Briefing every Sunday
+
+### Components
+
+| File | Purpose |
+|------|---------|
+| `odoo_mcp.py` | Odoo JSON-RPC integration (invoices, revenue, expenses) |
+| `meta_poster.py` | Facebook & Instagram post generation and publishing |
+| `twitter_poster.py` | Twitter/X tweets, threads, engagement summaries |
+| `ralph_loop.py` | Autonomous AI worker loop pattern |
+| `weekly_audit.py` | Weekly business audit and CEO briefing generator |
+| `test_gold.py` | Gold Tier test suite (7 tests) |
+
+### Odoo ERP Setup
+
+```bash
+# Install dependencies
+pip install requests python-dotenv colorama
+
+# Docker setup (recommended):
+docker run -p 8069:8069 odoo:17
+
+# Or install Odoo Community: https://www.odoo.com/documentation
+
+# Add to .env:
+ODOO_URL=http://localhost:8069
+ODOO_DB=your_db_name
+ODOO_USER=admin
+ODOO_PASSWORD=your_password
+```
+
+### Meta (Facebook/Instagram) Setup
+
+```bash
+# Install dependencies
+pip install requests schedule python-dotenv colorama openai
+
+# Facebook Developer setup:
+# 1. Go to https://developers.facebook.com/
+# 2. Create App → Business type
+# 3. Add: Facebook Login + Instagram Graph API products
+# 4. Get Page Access Token from Graph API Explorer
+# 5. Convert to Long-Lived Token (60 days)
+
+# Add to .env:
+FB_PAGE_ID=your_page_id
+FB_PAGE_ACCESS_TOKEN=your_token
+IG_USER_ID=your_ig_user_id
+IG_ACCESS_TOKEN=your_token
+```
+
+### Twitter/X Setup
+
+```bash
+# Install dependencies
+pip install tweepy requests python-dotenv colorama openai
+
+# Twitter Developer setup:
+# 1. Go to https://developer.twitter.com/
+# 2. Create Project + App
+# 3. Apply for Elevated access (free, required for posting)
+# 4. Generate all 4 keys from App Settings → Keys and Tokens
+
+# Add to .env:
+TWITTER_API_KEY=your_key
+TWITTER_API_SECRET=your_secret
+TWITTER_ACCESS_TOKEN=your_token
+TWITTER_ACCESS_SECRET=your_token_secret
+```
+
+### Ralph Loop - Autonomous AI Worker
+
+Ralph Loop keeps Qwen working on a task until it's 100% complete or max iterations reached.
+
+```python
+from ralph_loop import RalphLoop, contains_phrase
+
+# Example: Process all files in Needs_Action
+ralph = RalphLoop(
+    task_description="Process all files in Needs_Action, create plans, move to Done",
+    completion_check_fn=lambda r: "<TASK_COMPLETE>" in r,
+    max_iterations=10
+)
+result = ralph.run()
+```
+
+**How it works:**
+1. Sends task + history to Qwen
+2. Gets response, saves to history
+3. Checks for `<TASK_COMPLETE>` tag or custom checker
+4. If complete → returns success
+5. If not complete → adds "Continue working" prompt, increments iteration
+6. If max iterations → creates alert in Needs_Action/
+
+### Weekly Audit - CEO Briefing Generator
+
+Runs every Sunday at 21:00, generates Monday Morning CEO Briefing.
+
+```bash
+# Run manual audit
+python weekly_audit.py
+
+# Run as scheduler (Sundays at 21:00)
+python weekly_audit.py --schedule
+```
+
+**Audit Flow (7 Steps):**
+
+| Step | Data Source | Output |
+|------|-------------|--------|
+| 1 | Odoo ERP | Revenue, expenses, profit, overdue invoices |
+| 2 | /Done/ folder | Task completion stats, bottlenecks |
+| 3 | Meta + Twitter | Social media performance summary |
+| 4 | Accounting summaries | Subscription audit (18 patterns detected) |
+| 5 | Qwen via Ralph Loop | CEO briefing generation |
+| 6 | File system | Saves to Briefings/YYYY-MM-DD_CEO_briefing.md |
+| 7 | Dashboard.md | Updates with latest figures |
+
+**Briefing Sections:**
+- Executive Summary
+- Revenue vs Target
+- Top 3 Wins This Week
+- Bottlenecks (with root cause)
+- Cost Optimization Suggestions
+- Next Week Priorities
+
+### Gold Tier Test Suite
+
+```bash
+python test_gold.py
+
+# Tests (7 total):
+# 1. Odoo Connection - authenticate() returns UID
+# 2. Odoo Data Fetch - get_monthly_revenue() returns data
+# 3. Facebook API - Graph API returns page info
+# 4. Instagram API - Graph API returns account info
+# 5. Twitter API - verify_credentials() succeeds
+# 6. Ralph Loop - Completes counting task in ≤3 iterations
+# 7. Full Audit - CEO briefing file created with content
+
+# Success: 7/7 tests passed
+# Output: "✅ Gold Tier Complete — Ready for Submission!"
+```
+
+### Start All Gold Tier Services
+
+```bash
+# Run weekly audit scheduler
+python weekly_audit.py --schedule
+
+# Or run individual components as needed
+python odoo_mcp.py          # Test Odoo connection
+python meta_poster.py       # Test Meta posting
+python twitter_poster.py    # Test Twitter posting
+python ralph_loop.py        # Test autonomous loop
+```
+
+---
+
+## 🚀 Complete Installation Guide
+
+### Prerequisites
+
+- Python 3.8+
+- pip package manager
+- API keys (see below)
+
+### Step 1: Clone/Download Repository
+
+```bash
+# Navigate to your project directory
+cd C:\Users\YourName\AI_Employee_Vault
+```
+
+### Step 2: Install All Dependencies
+
+```bash
+# Bronze Tier
+pip install watchdog colorama openai python-dotenv
+
+# Silver Tier
+pip install playwright google-auth google-auth-oauthlib google-api-python-client requests schedule
+
+# Gold Tier
+pip install tweepy
+
+# Install Playwright browsers
+playwright install chromium
+```
+
+### Step 3: Create .env File
+
+Create `.env` in the `AI_Employee_Vault` folder:
+
+```bash
+# ===========================================
+# API KEYS - Configure based on your tier
+# ===========================================
+
+# OpenRouter (required for AI analysis)
+OPENROUTER_API_KEY=sk-or-v1-your-key-here
+OPENROUTER_MODEL=anthropic/claude-3.5-sonnet
+
+# --- BRONZE TIER (optional) ---
+# No additional keys needed
+
+# --- SILVER TIER ---
+# WhatsApp: No keys needed (uses browser session)
+
+# Gmail
+# LINKEDIN_ACCESS_TOKEN=your_linkedin_token
+# LINKEDIN_AUTHOR_URN=urn:li:person:YOUR_ID
+
+# --- GOLD TIER ---
+# Odoo ERP
+ODOO_URL=http://localhost:8069
+ODOO_DB=your_db_name
+ODOO_USER=admin
+ODOO_PASSWORD=your_password
+
+# Meta (Facebook/Instagram)
+FB_PAGE_ID=your_page_id
+FB_PAGE_ACCESS_TOKEN=your_token
+IG_USER_ID=your_ig_user_id
+IG_ACCESS_TOKEN=your_token
+
+# Twitter/X
+TWITTER_API_KEY=your_key
+TWITTER_API_SECRET=your_secret
+TWITTER_ACCESS_TOKEN=your_token
+TWITTER_ACCESS_SECRET=your_token_secret
+
+# Global Settings
+DRY_RUN=false
+```
+
+### Step 4: Verify Installation
+
+```bash
+# Run appropriate test suite
+python test_bronze.py    # For Bronze Tier
+python test_gold.py      # For Gold Tier (includes all tiers)
+```
+
+---
+
+## 📊 API Key Setup Details
+
+### OpenRouter (Required for all tiers)
+
+1. Go to https://openrouter.ai/keys
+2. Create account / sign in
+3. Create new API key
+4. Copy key to `.env` as `OPENROUTER_API_KEY`
+
+**Alternative:** Qwen (DashScope)
+1. Go to https://dashscope.console.aliyun.com/
+2. Create API key
+3. Use `QWEN_API_KEY` in `.env`
+
+### Google OAuth (Gmail Watcher - Silver)
+
+1. Go to https://console.cloud.google.com/
+2. Create new project
+3. Enable **Gmail API**
+4. Create **OAuth 2.0 Client ID** (Desktop application)
+5. Download JSON → Save as `AI_Employee_Project/gmail_credentials.json`
+6. First run of `gmail_watcher.py` will create token automatically
+
+### LinkedIn (Silver)
+
+1. Go to https://www.linkedin.com/developers/apps
+2. Create new app
+3. Request permissions: **w_member_social**, **profile**, **openid**
+4. Generate access token
+5. Get author URN: `python linkedin_poster.py --whoami`
+
+### Odoo (Gold)
+
+**Option A: Docker (Recommended)**
+```bash
+docker run -p 8069:8069 odoo:17
+# Access: http://localhost:8069
+# Create database, admin user
+```
+
+**Option B: Local Installation**
+1. Download from https://www.odoo.com/documentation
+2. Install and configure
+3. Note URL, database, credentials
+
+### Meta/Facebook (Gold)
+
+1. Go to https://developers.facebook.com/
+2. Create app → Business type
+3. Add products: **Facebook Login**, **Instagram Graph API**
+4. Get Page Access Token from Graph API Explorer
+5. Convert to Long-Lived Token (60 days validity)
+
+### Twitter/X (Gold)
+
+1. Go to https://developer.twitter.com/
+2. Create Project + App
+3. Apply for **Elevated** access (free, required for posting)
+4. Generate all 4 keys from App Settings → Keys and Tokens
+
+---
+
+## 🔄 Complete Workflow Examples
+
+### Example 1: Process a PDF Report (Bronze)
+
+```bash
+# 1. Drop file in Inbox
+cp quarterly_report.pdf Inbox/
+
+# 2. file_watcher.py detects and creates task
+# → Needs_Action/20260223_120000_quarterly_report.pdf.md
+
+# 3. orchestrator.py analyzes with AI
+# → Creates plan in Plans/
+# → If HIGH RISK → Copies to Pending_Approval/
+
+# 4. Review and approve
+python approve.py
+# → Select item → Approve
+
+# 5. Task completed → Moved to Done/
+```
+
+### Example 2: WhatsApp Invoice Alert (Silver)
+
+```bash
+# 1. Start WhatsApp watcher
+python whatsapp_watcher.py
+
+# 2. Receive WhatsApp: "urgent - invoice attached"
+# → Watcher detects keyword "urgent" + "invoice"
+# → Creates task: Needs_Action/WHATSAPP_Contact_20260223_013031.md
+
+# 3. orchestrator.py processes task
+# → Creates action plan
+# → Moves to Done/ when complete
+```
+
+### Example 3: LinkedIn Post Generation (Silver)
+
+```bash
+# 1. Generate post draft
+python linkedin_poster.py --generate "AI productivity tips"
+# → Creates: Pending_Approval/LINKEDIN_facebook_20260223_120000.md
+
+# 2. Review and approve
+# → Move file from Pending_Approval/ to Approved/
+
+# 3. Post (automatic via scheduler or manual)
+python linkedin_poster.py --post
+# → Posts to LinkedIn → Moves to Done/
+```
+
+### Example 4: Weekly CEO Briefing (Gold)
+
+```bash
+# 1. Automatic: Every Sunday at 21:00
+# OR manual:
+python weekly_audit.py
+
+# 2. Audit collects:
+# - Financial data from Odoo
+# - Task completion stats from /Done/
+# - Social media performance
+# - Subscription audit
+
+# 3. Qwen generates briefing via Ralph Loop
+# → Briefings/2026-02-23_CEO_briefing.md
+
+# 4. Dashboard.md updated with latest figures
+```
+
+### Example 5: Autonomous Task Processing (Gold)
+
+```python
+from ralph_loop import RalphLoop, all_files_processed
+
+# Process all pending tasks autonomously
+ralph = RalphLoop(
+    task_description="Process all files in Needs_Action - read, plan, execute, move to Done",
+    completion_check_fn=all_files_processed(),
+    max_iterations=10
+)
+result = ralph.run()
+
+# Ralph will keep working until all files are processed
+# or max iterations reached
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| **API key not found** | Check `.env` file exists in AI_Employee_Vault folder |
+| **File watcher crashes** | Ensure file has read permissions; check Logs/ for errors |
+| **Tasks not processing** | Verify orchestrator.py is running; check API key has credits |
+| **WhatsApp session expired** | Delete `whatsapp_session/` and re-scan QR code |
+| **Gmail token expired** | Delete `gmail_token.json` and re-authenticate |
+| **LinkedIn 403 error** | Run `python linkedin_poster.py --whoami` and update URN in .env |
+| **Odoo connection failed** | Verify Odoo server is running at ODOO_URL |
+| **Twitter auth failed** | Ensure all 4 Twitter credentials are set; check Elevated access |
+| **Ralph Loop not completing** | Increase max_iterations; check if task is too vague |
+| **Weekly audit fails** | Check all Gold Tier dependencies are installed |
+
+### Debug Mode
+
+Enable verbose logging by checking `Logs/` folder:
+
+```bash
+# View today's log
+type Logs\2026-02-23.json
+
+# Or on Linux/Mac
+cat Logs/2026-02-23.json
+```
+
+### Test Diagnostics
+
+```bash
+# Run test suite for your tier
+python test_bronze.py    # Bronze
+python test_gold.py      # Gold (includes all tiers)
+
+# Results saved to Logs/test_results.md
+```
+
+---
+
+## 📊 Quick Reference
+
+### Start All Services (Gold Tier)
+
+```bash
+# Terminal 1: File Watcher (Bronze)
+python file_watcher.py
+
+# Terminal 2: Orchestrator (Bronze)
+python orchestrator.py
+
+# Terminal 3: WhatsApp Watcher (Silver)
+python whatsapp_watcher.py
+
+# Terminal 4: Gmail Watcher (Silver)
+python gmail_watcher.py
+
+# Terminal 5: LinkedIn Poster (Silver)
+python linkedin_poster.py
+
+# Terminal 6: Weekly Audit Scheduler (Gold)
+python weekly_audit.py --schedule
 
 # When needed: Approval Manager
 python approve.py
 ```
 
 ### Stop Services
-- Press `Ctrl+C` in both terminals
 
-### Check Logs
+- Press `Ctrl+C` in each terminal
+
+### Check Status
+
 ```bash
-# Today's log
-type Logs\2026-02-23.json
+# View pending approvals
+python approve.py list
 
-# All logs folder
-dir Logs\
+# View dashboard
+type Dashboard.md
+
+# View test results
+type Logs\test_results.md
 ```
 
-### View Pending Approvals
-```bash
-python approve.py list
+---
+
+## 📝 File Format Reference
+
+### Task File (Needs_Action/)
+
+```markdown
+---
+type: file_drop/whatsapp/email
+from: sender_name
+received: 2026-02-23T12:00:00
+priority: urgent/high/medium
+status: pending
+---
+## Content
+<message or file details>
+
+## Suggested Actions
+- [ ] Action 1
+- [ ] Action 2
+```
+
+### Plan File (Plans/)
+
+```markdown
+---
+created: 2026-02-23T12:05:30
+risk_level: LOW/MEDIUM/HIGH
+status: pending
+---
+## Objective
+<task objective>
+
+## Steps
+- [ ] Step 1
+- [ ] Step 2
+
+## Risk Assessment
+Risk Level: HIGH - <reason>
+
+## Requires Approval: YES
+```
+
+### CEO Briefing (Briefings/)
+
+```markdown
+---
+generated: 2026-02-23T21:30:00
+period: 2026-02-16 to 2026-02-23
+revenue: 50000
+expenses: 35000
+profit: 15000
+---
+
+# Monday Morning CEO Briefing
+
+## Executive Summary
+<summary>
+
+## Revenue vs Target
+<analysis>
+
+## Top 3 Wins This Week
+1. <win>
+2. <win>
+3. <win>
+
+## Bottlenecks
+<issues with root cause>
+
+## Cost Optimization
+<suggestions>
+
+## Next Week Priorities
+1. <priority>
+2. <priority>
+3. <priority>
 ```
 
 ---
 
 ## 🎯 Best Practices
 
-1. **Always run file_watcher.py** in background when the system is active
-2. **Run orchestrator.py** separately for AI processing
-3. **Check approve.py daily** for pending approvals
-4. **Review Logs/** folder for audit trail
-5. **Run test_bronze.py** after any changes
+1. **Run file_watcher.py continuously** when system is active
+2. **Check approve.py daily** for pending high-risk tasks
+3. **Review Briefings/ weekly** for CEO insights
+4. **Monitor Logs/ folder** for audit trail
+5. **Run test suites** after any configuration changes
+6. **Keep sessions secure** - don't share gmail_token.json or whatsapp_session/
+7. **Use DRY_RUN=true** when testing social media posting
+8. **Back up .env file** securely (contains API keys)
 
 ---
 
 ## 📞 Support
 
-**Issues:**
+**Diagnostic Steps:**
 1. Check logs in `Logs/` folder
-2. Run `python test_bronze.py` for diagnostics
-3. Ensure API key is valid and has credits
+2. Run `python test_bronze.py` or `python test_gold.py`
+3. Verify API keys are valid and have credits
+4. Ensure all services are running
+
+**Common Commands:**
+```bash
+# List pending approvals
+python approve.py list
+
+# Test connectivity
+python test_gold.py
+
+# View dashboard
+type Dashboard.md
+```
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** 2026-02-23
+**Version:** 2.0.0 (Gold Tier)
+**Last Updated:** 2026-02-24
+**Tiers:** Bronze ✅ | Silver ✅ | Gold ✅
